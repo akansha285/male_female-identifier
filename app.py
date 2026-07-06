@@ -19,7 +19,7 @@ st.set_page_config(
 
 model = joblib.load("male_female_model.pkl")
 
-IMG_SIZE = 32
+IMG_SIZE = 64
 
 st.title("👨🚺♀️ Male vs Female Image Classifier")
 
