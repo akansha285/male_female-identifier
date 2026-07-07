@@ -9,9 +9,10 @@ import time
 # Page Config
 # -------------------------
 st.set_page_config(
-    page_title="Male vs Female Classifier",
+    page_title="AI Gender Classifier",
     page_icon="✨",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # -------------------------
@@ -21,7 +22,22 @@ model = joblib.load("modell.pkl")
 IMG_SIZE = 64
 
 # -------------------------
-# Premium CSS Styling + Beautiful Effects
+# Helper: Circular Confidence Ring
+# -------------------------
+def confidence_ring(label, percent, color1="#7c3aed", color2="#06b6d4"):
+    return f"""
+    <div class="ring-card">
+        <div class="ring-wrap" style="--percent:{percent}; --c1:{color1}; --c2:{color2};">
+            <div class="ring-inner">
+                <div class="ring-value">{percent:.1f}%</div>
+            </div>
+        </div>
+        <div class="ring-label">{label}</div>
+    </div>
+    """
+
+# -------------------------
+# Premium CSS
 # -------------------------
 st.markdown("""
 <style>
@@ -32,8 +48,8 @@ st.markdown("""
     background:
         radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.28), transparent 28%),
         radial-gradient(circle at 85% 25%, rgba(6, 182, 212, 0.24), transparent 28%),
-        radial-gradient(circle at 50% 85%, rgba(34, 197, 94, 0.20), transparent 30%),
-        linear-gradient(135deg, #081120 0%, #0f172a 45%, #111827 100%);
+        radial-gradient(circle at 50% 85%, rgba(34, 197, 94, 0.18), transparent 30%),
+        linear-gradient(135deg, #07111f 0%, #0f172a 45%, #111827 100%);
     color: white;
     overflow-x: hidden;
 }
@@ -47,19 +63,18 @@ st.markdown("""
         radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.18), transparent 22%),
         radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.15), transparent 22%),
         radial-gradient(circle at 55% 80%, rgba(74, 222, 128, 0.12), transparent 24%);
-    filter: blur(50px);
-    animation: auroraMove 14s ease-in-out infinite alternate;
+    filter: blur(55px);
+    animation: auroraMove 15s ease-in-out infinite alternate;
     z-index: -3;
 }
-
 @keyframes auroraMove {
     0%   { transform: translate3d(0, 0, 0) scale(1); }
-    50%  { transform: translate3d(25px, -20px, 0) scale(1.04); }
-    100% { transform: translate3d(-20px, 18px, 0) scale(1.02); }
+    50%  { transform: translate3d(25px, -18px, 0) scale(1.04); }
+    100% { transform: translate3d(-18px, 18px, 0) scale(1.02); }
 }
 
 /* =========================
-   FLOATING PARTICLES
+   PARTICLES
 ========================= */
 .particles {
     position: fixed;
@@ -69,22 +84,19 @@ st.markdown("""
 }
 .particle {
     position: absolute;
-    width: 10px;
-    height: 10px;
-    background: rgba(255,255,255,0.12);
     border-radius: 50%;
-    box-shadow: 0 0 18px rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.12);
+    box-shadow: 0 0 18px rgba(255,255,255,0.16);
     animation: drift linear infinite;
 }
-.p1 { top: 12%; left: 14%; animation-duration: 13s; width: 8px; height: 8px; }
-.p2 { top: 25%; left: 80%; animation-duration: 16s; width: 12px; height: 12px; }
-.p3 { top: 68%; left: 20%; animation-duration: 18s; width: 9px; height: 9px; }
-.p4 { top: 76%; left: 72%; animation-duration: 14s; width: 7px; height: 7px; }
-.p5 { top: 45%; left: 50%; animation-duration: 20s; width: 10px; height: 10px; }
-.p6 { top: 15%; left: 55%; animation-duration: 17s; width: 6px; height: 6px; }
-.p7 { top: 58%; left: 88%; animation-duration: 15s; width: 11px; height: 11px; }
-.p8 { top: 84%; left: 42%; animation-duration: 19s; width: 8px; height: 8px; }
-
+.p1 { top: 12%; left: 14%; width: 8px; height: 8px; animation-duration: 13s; }
+.p2 { top: 25%; left: 80%; width: 12px; height: 12px; animation-duration: 16s; }
+.p3 { top: 68%; left: 20%; width: 9px; height: 9px; animation-duration: 18s; }
+.p4 { top: 76%; left: 72%; width: 7px; height: 7px; animation-duration: 14s; }
+.p5 { top: 45%; left: 50%; width: 10px; height: 10px; animation-duration: 20s; }
+.p6 { top: 15%; left: 55%; width: 6px; height: 6px; animation-duration: 17s; }
+.p7 { top: 58%; left: 88%; width: 11px; height: 11px; animation-duration: 15s; }
+.p8 { top: 84%; left: 42%; width: 8px; height: 8px; animation-duration: 19s; }
 @keyframes drift {
     0%   { transform: translateY(0px) translateX(0px); opacity: 0.2; }
     25%  { opacity: 0.55; }
@@ -94,7 +106,34 @@ st.markdown("""
 }
 
 /* =========================
-   HERO SECTION
+   SIDEBAR
+========================= */
+section[data-testid="stSidebar"] {
+    background: rgba(10, 18, 33, 0.92);
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-card {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+}
+.sidebar-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+.sidebar-text {
+    color: #dbeafe;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* =========================
+   HERO
 ========================= */
 .hero {
     position: relative;
@@ -102,7 +141,7 @@ st.markdown("""
     background: rgba(255,255,255,0.10);
     border: 1px solid rgba(255,255,255,0.16);
     backdrop-filter: blur(16px);
-    border-radius: 28px;
+    border-radius: 30px;
     padding: 34px;
     text-align: center;
     box-shadow: 0 12px 34px rgba(0,0,0,0.28);
@@ -126,18 +165,18 @@ st.markdown("""
 }
 .hero h1 {
     margin: 0;
-    font-size: 2.8rem;
+    font-size: 3rem;
     color: #ffffff;
     text-shadow: 0 0 18px rgba(255,255,255,0.10);
 }
 .hero p {
     margin-top: 10px;
     color: #dbeafe;
-    font-size: 1.05rem;
+    font-size: 1.08rem;
 }
 
 /* =========================
-   GLASS CARD
+   GLASS CARDS
 ========================= */
 .glass-card {
     background: rgba(255,255,255,0.10);
@@ -152,6 +191,22 @@ st.markdown("""
 .glass-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 16px 36px rgba(0,0,0,0.30);
+}
+
+/* =========================
+   UPLOADER
+========================= */
+section[data-testid="stFileUploader"] {
+    background: rgba(255,255,255,0.08);
+    border: 2px dashed rgba(255,255,255,0.25);
+    border-radius: 18px;
+    padding: 12px;
+    box-shadow: inset 0 0 18px rgba(255,255,255,0.04);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+section[data-testid="stFileUploader"]:hover {
+    border-color: rgba(96,165,250,0.85);
+    box-shadow: 0 0 22px rgba(96,165,250,0.18);
 }
 
 /* =========================
@@ -214,7 +269,6 @@ st.markdown("""
 .prediction-text {
     font-size: 2rem;
     font-weight: 800;
-    letter-spacing: 0.3px;
 }
 .prediction-sub {
     margin-top: 8px;
@@ -248,27 +302,48 @@ st.markdown("""
 }
 
 /* =========================
-   UPLOADER
+   CIRCULAR CONFIDENCE RING
 ========================= */
-section[data-testid="stFileUploader"] {
-    background: rgba(255,255,255,0.08);
-    border: 2px dashed rgba(255,255,255,0.25);
-    border-radius: 18px;
-    padding: 12px;
+.ring-card {
+    text-align: center;
+    animation: fadeUp 1s ease;
+}
+.ring-wrap {
+    --size: 180px;
+    width: var(--size);
+    height: var(--size);
+    margin: 0 auto 14px auto;
+    border-radius: 50%;
+    background:
+        conic-gradient(from 0deg, var(--c1) 0%, var(--c2) calc(var(--percent) * 1%), rgba(255,255,255,0.08) 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 28px rgba(124,58,237,0.22);
+    position: relative;
+}
+.ring-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    background: rgba(10, 16, 28, 0.95);
     box-shadow: inset 0 0 18px rgba(255,255,255,0.04);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-section[data-testid="stFileUploader"]:hover {
-    border-color: rgba(96,165,250,0.85);
-    box-shadow: 0 0 22px rgba(96,165,250,0.18);
+.ring-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
 }
-
-/* =========================
-   PROGRESS BAR
-========================= */
-div[data-testid="stProgressBar"] > div > div > div {
-    background: linear-gradient(90deg, #7c3aed, #06b6d4, #22c55e) !important;
-    border-radius: 999px !important;
+.ring-value {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: white;
+}
+.ring-label {
+    font-size: 1rem;
+    color: #dbeafe;
+    font-weight: 600;
 }
 
 /* =========================
@@ -291,7 +366,29 @@ div[data-testid="stProgressBar"] > div > div > div {
 }
 
 /* =========================
-   ANIMATIONS + FOOTER
+   BADGE
+========================= */
+.badge {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: rgba(34,197,94,0.16);
+    border: 1px solid rgba(34,197,94,0.25);
+    color: #dcfce7;
+    font-weight: 700;
+    box-shadow: 0 0 18px rgba(34,197,94,0.10);
+}
+
+/* =========================
+   PROGRESS BAR
+========================= */
+div[data-testid="stProgressBar"] > div > div > div {
+    background: linear-gradient(90deg, #7c3aed, #06b6d4, #22c55e) !important;
+    border-radius: 999px !important;
+}
+
+/* =========================
+   FOOTER + ANIMATION
 ========================= */
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(18px); }
@@ -318,17 +415,53 @@ div[data-testid="stProgressBar"] > div > div > div {
 """, unsafe_allow_html=True)
 
 # -------------------------
-# HERO
+# Sidebar
+# -------------------------
+with st.sidebar:
+    st.markdown("""
+    <div class="sidebar-card">
+        <div class="sidebar-title">🤖 Model Overview</div>
+        <div class="sidebar-text">
+            This app classifies an uploaded face image as <b>Male</b> or <b>Female</b> using a trained machine learning model.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div class="sidebar-card">
+        <div class="sidebar-title">⚙️ Model Details</div>
+        <div class="sidebar-text">
+            • Input size: <b>{IMG_SIZE} × {IMG_SIZE}</b><br>
+            • Preprocessing: Resize + Flatten<br>
+            • Output: Male / Female prediction + probabilities
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="sidebar-card">
+        <div class="sidebar-title">📌 How it works</div>
+        <div class="sidebar-text">
+            1. Upload an image<br>
+            2. The app preprocesses it<br>
+            3. The model predicts the class<br>
+            4. Confidence scores are displayed
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# -------------------------
+# Hero
 # -------------------------
 st.markdown("""
 <div class="hero">
-    <h1>✨ Male vs Female Image Classifier</h1>
-    <p>Upload an image and get a polished AI-powered prediction with elegant visuals and confidence scores.</p>
+    <h1>✨ AI Gender Classifier Dashboard</h1>
+    <p>Upload an image and get a polished AI-powered gender prediction with premium visuals and confidence analytics.</p>
 </div>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# UPLOAD
+# Upload
 # -------------------------
 st.markdown("## 📤 Upload Image")
 uploaded_file = st.file_uploader(
@@ -348,7 +481,7 @@ if uploaded_file is not None:
     resized = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
     resized = resized.flatten()
 
-    with st.spinner("Analyzing image..."):
+    with st.spinner("Analyzing image with AI model..."):
         time.sleep(1)
 
     prediction = model.predict([resized])[0]
@@ -364,6 +497,7 @@ if uploaded_file is not None:
         predicted_label = "Female"
         emoji = "👩"
 
+    # Top row
     col1, col2 = st.columns([1.1, 1], gap="large")
 
     with col1:
@@ -404,10 +538,43 @@ if uploaded_file is not None:
         st.progress(float(probability[1]))
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # Confidence ring + verdict
     st.markdown("<br>", unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
+    c1, c2 = st.columns([1, 1], gap="large")
 
     with c1:
+        dominant_conf = male_prob if predicted_label == "Male" else female_prob
+        ring_html = confidence_ring(
+            f"{predicted_label} Confidence",
+            dominant_conf,
+            "#7c3aed",
+            "#06b6d4"
+        )
+        st.markdown(f'<div class="glass-card">{ring_html}</div>', unsafe_allow_html=True)
+
+    with c2:
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.subheader("🧠 AI Analysis Summary")
+
+        if dominant_conf >= 85:
+            verdict = "High Confidence Prediction"
+        elif dominant_conf >= 65:
+            verdict = "Moderate Confidence Prediction"
+        else:
+            verdict = "Low Confidence Prediction"
+
+        st.markdown(f'<div class="badge">{verdict}</div>', unsafe_allow_html=True)
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.write(f"**Predicted Class:** {predicted_label}")
+        st.write(f"**Male Probability:** {male_prob:.2f}%")
+        st.write(f"**Female Probability:** {female_prob:.2f}%")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # Summary cards
+    st.markdown("<br>", unsafe_allow_html=True)
+    s1, s2, s3 = st.columns(3)
+
+    with s1:
         st.markdown(f"""
         <div class="summary-card">
             <h3>🎯 Prediction</h3>
@@ -415,7 +582,7 @@ if uploaded_file is not None:
         </div>
         """, unsafe_allow_html=True)
 
-    with c2:
+    with s2:
         st.markdown(f"""
         <div class="summary-card">
             <h3>👨 Male Score</h3>
@@ -423,7 +590,7 @@ if uploaded_file is not None:
         </div>
         """, unsafe_allow_html=True)
 
-    with c3:
+    with s3:
         st.markdown(f"""
         <div class="summary-card">
             <h3>👩 Female Score</h3>
@@ -433,12 +600,17 @@ if uploaded_file is not None:
 
 else:
     st.markdown("""
-    <div class="glass-card" style="text-align:center;">
-        <h3>📁 No image uploaded yet</h3>
-        <p>Please upload a JPG, JPEG, or PNG image to begin classification.</p>
+    <div class="glass-card" style="text-align:center; padding:40px;">
+        <h2>📁 Upload an image to begin</h2>
+        <p style="color:#dbeafe; font-size:1rem;">
+            Your AI dashboard will show the prediction, confidence scores, analysis summary, and premium visuals here.
+        </p>
     </div>
     """, unsafe_allow_html=True)
 
+# -------------------------
+# Footer
+# -------------------------
 st.markdown("""
 <div class="footer">
     Built with ❤️ using Streamlit, OpenCV, NumPy and Scikit-learn
