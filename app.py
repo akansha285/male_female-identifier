@@ -74,7 +74,7 @@ st.markdown("""
 }
 
 /* =========================
-   PARTICLES
+   FLOATING PARTICLES
 ========================= */
 .particles {
     position: fixed;
@@ -97,6 +97,7 @@ st.markdown("""
 .p6 { top: 15%; left: 55%; width: 6px; height: 6px; animation-duration: 17s; }
 .p7 { top: 58%; left: 88%; width: 11px; height: 11px; animation-duration: 15s; }
 .p8 { top: 84%; left: 42%; width: 8px; height: 8px; animation-duration: 19s; }
+
 @keyframes drift {
     0%   { transform: translateY(0px) translateX(0px); opacity: 0.2; }
     25%  { opacity: 0.55; }
@@ -388,6 +389,55 @@ div[data-testid="stProgressBar"] > div > div > div {
 }
 
 /* =========================
+   FLYING HEARTS EFFECT
+========================= */
+.hearts-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 9999;
+}
+.heart {
+    position: absolute;
+    bottom: -50px;
+    font-size: 26px;
+    opacity: 0;
+    animation: floatHeart linear forwards;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.25));
+}
+@keyframes floatHeart {
+    0% {
+        transform: translateY(0) scale(0.7) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-45vh) translateX(20px) scale(1.1) rotate(180deg);
+        opacity: 0.95;
+    }
+    100% {
+        transform: translateY(-110vh) translateX(-20px) scale(1.45) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.h1  { left: 5%;  color: #ff4d6d; animation-duration: 7s;  font-size: 22px; }
+.h2  { left: 12%; color: #ff85a1; animation-duration: 9s;  font-size: 28px; }
+.h3  { left: 20%; color: #ff006e; animation-duration: 8s;  font-size: 20px; }
+.h4  { left: 28%; color: #fb6f92; animation-duration: 10s; font-size: 30px; }
+.h5  { left: 36%; color: #c77dff; animation-duration: 7.5s; font-size: 24px; }
+.h6  { left: 44%; color: #9d4edd; animation-duration: 9.5s; font-size: 26px; }
+.h7  { left: 52%; color: #ff758f; animation-duration: 8.5s; font-size: 22px; }
+.h8  { left: 60%; color: #ff4d6d; animation-duration: 11s; font-size: 32px; }
+.h9  { left: 68%; color: #ff8fab; animation-duration: 8.8s; font-size: 25px; }
+.h10 { left: 76%; color: #f72585; animation-duration: 10.5s; font-size: 29px; }
+.h11 { left: 84%; color: #b5179e; animation-duration: 9.2s; font-size: 24px; }
+.h12 { left: 92%; color: #ff5d8f; animation-duration: 11.5s; font-size: 30px; }
+
+/* =========================
    FOOTER + ANIMATION
 ========================= */
 @keyframes fadeUp {
@@ -497,7 +547,29 @@ if uploaded_file is not None:
         predicted_label = "Female"
         emoji = "👩"
 
-    # Top row
+    # -------------------------
+    # Flying hearts celebration effect
+    # -------------------------
+    st.markdown("""
+    <div class="hearts-container">
+        <div class="heart h1">💖</div>
+        <div class="heart h2">💜</div>
+        <div class="heart h3">💗</div>
+        <div class="heart h4">💕</div>
+        <div class="heart h5">💖</div>
+        <div class="heart h6">💜</div>
+        <div class="heart h7">💗</div>
+        <div class="heart h8">💕</div>
+        <div class="heart h9">💖</div>
+        <div class="heart h10">💜</div>
+        <div class="heart h11">💗</div>
+        <div class="heart h12">💕</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # -------------------------
+    # Top Row
+    # -------------------------
     col1, col2 = st.columns([1.1, 1], gap="large")
 
     with col1:
@@ -538,7 +610,9 @@ if uploaded_file is not None:
         st.progress(float(probability[1]))
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # Confidence ring + verdict
+    # -------------------------
+    # Confidence Ring + AI Summary
+    # -------------------------
     st.markdown("<br>", unsafe_allow_html=True)
     c1, c2 = st.columns([1, 1], gap="large")
 
@@ -570,7 +644,9 @@ if uploaded_file is not None:
         st.write(f"**Female Probability:** {female_prob:.2f}%")
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # Summary cards
+    # -------------------------
+    # Summary Cards
+    # -------------------------
     st.markdown("<br>", unsafe_allow_html=True)
     s1, s2, s3 = st.columns(3)
 
