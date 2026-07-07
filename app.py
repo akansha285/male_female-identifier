@@ -21,90 +21,94 @@ model = joblib.load("modell.pkl")
 IMG_SIZE = 64
 
 # -------------------------
-# CSS Styling + Effects
+# Premium CSS Styling + Beautiful Effects
 # -------------------------
 st.markdown("""
 <style>
-/* ===== App Background ===== */
+/* =========================
+   GLOBAL BACKGROUND
+========================= */
 .stApp {
-    background: linear-gradient(-45deg, #0f172a, #1e293b, #312e81, #0f766e);
-    background-size: 400% 400%;
-    animation: gradientBG 14s ease infinite;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.28), transparent 28%),
+        radial-gradient(circle at 85% 25%, rgba(6, 182, 212, 0.24), transparent 28%),
+        radial-gradient(circle at 50% 85%, rgba(34, 197, 94, 0.20), transparent 30%),
+        linear-gradient(135deg, #081120 0%, #0f172a 45%, #111827 100%);
     color: white;
     overflow-x: hidden;
 }
 
-@keyframes gradientBG {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50%;}
-}
-
-/* ===== Floating Glow Blobs ===== */
-.glow {
+/* Aurora overlay */
+.stApp::before {
+    content: "";
     position: fixed;
+    inset: -10%;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.18), transparent 22%),
+        radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.15), transparent 22%),
+        radial-gradient(circle at 55% 80%, rgba(74, 222, 128, 0.12), transparent 24%);
+    filter: blur(50px);
+    animation: auroraMove 14s ease-in-out infinite alternate;
+    z-index: -3;
+}
+
+@keyframes auroraMove {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    50%  { transform: translate3d(25px, -20px, 0) scale(1.04); }
+    100% { transform: translate3d(-20px, 18px, 0) scale(1.02); }
+}
+
+/* =========================
+   FLOATING PARTICLES
+========================= */
+.particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+}
+.particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(255,255,255,0.12);
     border-radius: 50%;
-    filter: blur(90px);
-    z-index: -1;
-    opacity: 0.45;
+    box-shadow: 0 0 18px rgba(255,255,255,0.18);
+    animation: drift linear infinite;
 }
-.glow1 {
-    width: 260px;
-    height: 260px;
-    background: #7c3aed;
-    top: 80px;
-    left: 50px;
-    animation: float1 10s ease-in-out infinite;
-}
-.glow2 {
-    width: 240px;
-    height: 240px;
-    background: #06b6d4;
-    bottom: 70px;
-    right: 80px;
-    animation: float2 12s ease-in-out infinite;
-}
-.glow3 {
-    width: 200px;
-    height: 200px;
-    background: #22c55e;
-    top: 45%;
-    left: 45%;
-    animation: float3 11s ease-in-out infinite;
+.p1 { top: 12%; left: 14%; animation-duration: 13s; width: 8px; height: 8px; }
+.p2 { top: 25%; left: 80%; animation-duration: 16s; width: 12px; height: 12px; }
+.p3 { top: 68%; left: 20%; animation-duration: 18s; width: 9px; height: 9px; }
+.p4 { top: 76%; left: 72%; animation-duration: 14s; width: 7px; height: 7px; }
+.p5 { top: 45%; left: 50%; animation-duration: 20s; width: 10px; height: 10px; }
+.p6 { top: 15%; left: 55%; animation-duration: 17s; width: 6px; height: 6px; }
+.p7 { top: 58%; left: 88%; animation-duration: 15s; width: 11px; height: 11px; }
+.p8 { top: 84%; left: 42%; animation-duration: 19s; width: 8px; height: 8px; }
+
+@keyframes drift {
+    0%   { transform: translateY(0px) translateX(0px); opacity: 0.2; }
+    25%  { opacity: 0.55; }
+    50%  { transform: translateY(-28px) translateX(18px); opacity: 0.3; }
+    75%  { opacity: 0.6; }
+    100% { transform: translateY(0px) translateX(0px); opacity: 0.2; }
 }
 
-@keyframes float1 {
-    0% {transform: translate(0,0);}
-    50% {transform: translate(30px, 40px);}
-    100% {transform: translate(0,0);}
-}
-@keyframes float2 {
-    0% {transform: translate(0,0);}
-    50% {transform: translate(-25px, -35px);}
-    100% {transform: translate(0,0);}
-}
-@keyframes float3 {
-    0% {transform: translate(0,0);}
-    50% {transform: translate(20px, -25px);}
-    100% {transform: translate(0,0);}
-}
-
-/* ===== Hero Section ===== */
+/* =========================
+   HERO SECTION
+========================= */
 .hero {
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.18);
-    backdrop-filter: blur(16px);
-    border-radius: 26px;
-    padding: 32px;
-    text-align: center;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-    margin-bottom: 25px;
-    animation: fadeUp 1s ease;
     position: relative;
     overflow: hidden;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.16);
+    backdrop-filter: blur(16px);
+    border-radius: 28px;
+    padding: 34px;
+    text-align: center;
+    box-shadow: 0 12px 34px rgba(0,0,0,0.28);
+    margin-bottom: 26px;
+    animation: fadeUp 0.9s ease;
 }
-
-/* moving shine across hero */
 .hero::before {
     content: "";
     position: absolute;
@@ -112,78 +116,81 @@ st.markdown("""
     left: -120%;
     width: 60%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.20), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
     transform: skewX(-20deg);
-    animation: heroShine 4s linear infinite;
+    animation: heroShine 4.5s linear infinite;
 }
-
 @keyframes heroShine {
-    0% { left: -120%; }
+    0%   { left: -120%; }
     100% { left: 150%; }
 }
-
 .hero h1 {
+    margin: 0;
     font-size: 2.8rem;
-    margin-bottom: 10px;
-    color: white;
-    animation: pulseText 2.5s ease-in-out infinite;
+    color: #ffffff;
+    text-shadow: 0 0 18px rgba(255,255,255,0.10);
 }
 .hero p {
-    font-size: 1.08rem;
-    color: #e2e8f0;
+    margin-top: 10px;
+    color: #dbeafe;
+    font-size: 1.05rem;
 }
 
-@keyframes pulseText {
-    0% { text-shadow: 0 0 0px rgba(255,255,255,0.2); }
-    50% { text-shadow: 0 0 16px rgba(255,255,255,0.35); }
-    100% { text-shadow: 0 0 0px rgba(255,255,255,0.2); }
-}
-
-/* ===== Glass Card ===== */
+/* =========================
+   GLASS CARD
+========================= */
 .glass-card {
     background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.16);
     backdrop-filter: blur(14px);
-    border-radius: 22px;
+    border-radius: 24px;
     padding: 22px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.22);
-    transition: all 0.35s ease;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.22);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
     animation: fadeUp 0.9s ease;
 }
-
 .glass-card:hover {
-    transform: translateY(-5px) scale(1.01);
-    box-shadow: 0 14px 36px rgba(0,0,0,0.32);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.30);
 }
 
-/* ===== Image Card ===== */
+/* =========================
+   IMAGE FRAME
+========================= */
 .image-frame {
-    border-radius: 22px;
+    position: relative;
+    border-radius: 24px;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.20);
-    box-shadow: 0 0 0 rgba(34,197,94,0.0);
-    transition: all 0.4s ease;
+    padding: 3px;
+    background: linear-gradient(135deg, rgba(168,85,247,0.8), rgba(34,211,238,0.8), rgba(74,222,128,0.8));
+    box-shadow: 0 0 24px rgba(34,211,238,0.15);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 .image-frame:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 30px rgba(34,197,94,0.35);
+    transform: scale(1.015);
+    box-shadow: 0 0 34px rgba(34,211,238,0.24);
+}
+.image-inner {
+    background: rgba(7, 12, 22, 0.88);
+    border-radius: 22px;
+    padding: 6px;
 }
 
-/* ===== Prediction Card ===== */
+/* =========================
+   PREDICTION CARD
+========================= */
 .prediction-card {
-    background: linear-gradient(135deg, rgba(34,197,94,0.88), rgba(16,185,129,0.78));
-    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(34,197,94,0.88), rgba(16,185,129,0.80));
+    border-radius: 26px;
     padding: 28px;
     text-align: center;
     color: white;
-    box-shadow: 0 10px 30px rgba(16,185,129,0.35);
-    animation: pulseGlow 2.2s infinite;
+    box-shadow: 0 12px 34px rgba(16,185,129,0.30);
+    animation: pulseGlow 2.6s ease-in-out infinite;
     margin-bottom: 18px;
-    position: relative;
-    overflow: hidden;
 }
-
-/* shimmer inside prediction card */
 .prediction-card::before {
     content: "";
     position: absolute;
@@ -193,129 +200,135 @@ st.markdown("""
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
     transform: skewX(-20deg);
-    animation: shimmer 3.2s linear infinite;
+    animation: shimmer 3.8s linear infinite;
 }
-
 @keyframes shimmer {
-    0% { left: -130%; }
+    0%   { left: -130%; }
     100% { left: 150%; }
 }
-
 @keyframes pulseGlow {
-    0% { box-shadow: 0 0 0 rgba(16,185,129,0.3); }
-    50% { box-shadow: 0 0 30px rgba(16,185,129,0.55); }
-    100% { box-shadow: 0 0 0 rgba(16,185,129,0.3); }
+    0%   { box-shadow: 0 0 0 rgba(16,185,129,0.25); }
+    50%  { box-shadow: 0 0 34px rgba(16,185,129,0.45); }
+    100% { box-shadow: 0 0 0 rgba(16,185,129,0.25); }
 }
-
 .prediction-text {
     font-size: 2rem;
     font-weight: 800;
-    animation: floatLabel 2.5s ease-in-out infinite;
+    letter-spacing: 0.3px;
 }
 .prediction-sub {
-    font-size: 1rem;
-    color: #ecfdf5;
     margin-top: 8px;
-}
-@keyframes floatLabel {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-4px); }
-    100% { transform: translateY(0px); }
+    color: #ecfdf5;
 }
 
-/* ===== Probability Boxes ===== */
+/* =========================
+   PROBABILITY BOXES
+========================= */
 .prob-box {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.11);
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 18px;
     padding: 16px;
-    border-radius: 16px;
     margin-bottom: 12px;
-    transition: 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .prob-box:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 22px rgba(255,255,255,0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.18);
 }
 .metric-title {
-    font-size: 1rem;
+    color: #e5f4ff;
     font-weight: 600;
-    color: #f8fafc;
+    font-size: 0.98rem;
 }
 .metric-value {
-    font-size: 1.35rem;
-    font-weight: 800;
     color: #ffffff;
+    font-weight: 800;
+    font-size: 1.35rem;
 }
 
-/* ===== Upload Box ===== */
+/* =========================
+   UPLOADER
+========================= */
 section[data-testid="stFileUploader"] {
     background: rgba(255,255,255,0.08);
-    border: 2px dashed rgba(255,255,255,0.28);
+    border: 2px dashed rgba(255,255,255,0.25);
     border-radius: 18px;
     padding: 12px;
-    box-shadow: inset 0 0 20px rgba(255,255,255,0.04);
-    transition: 0.3s ease;
+    box-shadow: inset 0 0 18px rgba(255,255,255,0.04);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 section[data-testid="stFileUploader"]:hover {
-    border-color: #60a5fa;
-    box-shadow: 0 0 22px rgba(96,165,250,0.20);
+    border-color: rgba(96,165,250,0.85);
+    box-shadow: 0 0 22px rgba(96,165,250,0.18);
 }
 
-/* ===== Better Progress Bar ===== */
+/* =========================
+   PROGRESS BAR
+========================= */
 div[data-testid="stProgressBar"] > div > div > div {
-    background: linear-gradient(90deg, #22c55e, #06b6d4, #7c3aed) !important;
+    background: linear-gradient(90deg, #7c3aed, #06b6d4, #22c55e) !important;
     border-radius: 999px !important;
 }
 
-/* ===== Summary Cards ===== */
+/* =========================
+   SUMMARY CARDS
+========================= */
 .summary-card {
     text-align: center;
     padding: 18px;
-    border-radius: 18px;
+    border-radius: 20px;
     background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.16);
     backdrop-filter: blur(14px);
-    box-shadow: 0 8px 28px rgba(0,0,0,0.20);
-    transition: all 0.3s ease;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.20);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     animation: fadeUp 1s ease;
 }
 .summary-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.28);
+    box-shadow: 0 14px 34px rgba(0,0,0,0.28);
 }
 
-/* ===== Fade Animation ===== */
+/* =========================
+   ANIMATIONS + FOOTER
+========================= */
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(18px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
 }
-
-/* ===== Footer ===== */
 .footer {
     text-align: center;
     color: #cbd5e1;
-    margin-top: 25px;
+    margin-top: 28px;
     font-size: 0.95rem;
 }
 </style>
 
-<div class="glow glow1"></div>
-<div class="glow glow2"></div>
-<div class="glow glow3"></div>
-""", unsafe_allow_html=True)
-
-# -------------------------
-# Header
-# -------------------------
-st.markdown("""
-<div class="hero">
-    <h1>✨ Male vs Female Image Classifier</h1>
-    <p>Upload an image and let the model predict the gender with a polished AI dashboard experience.</p>
+<div class="particles">
+    <div class="particle p1"></div>
+    <div class="particle p2"></div>
+    <div class="particle p3"></div>
+    <div class="particle p4"></div>
+    <div class="particle p5"></div>
+    <div class="particle p6"></div>
+    <div class="particle p7"></div>
+    <div class="particle p8"></div>
 </div>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# Upload
+# HERO
+# -------------------------
+st.markdown("""
+<div class="hero">
+    <h1>✨ Male vs Female Image Classifier</h1>
+    <p>Upload an image and get a polished AI-powered prediction with elegant visuals and confidence scores.</p>
+</div>
+""", unsafe_allow_html=True)
+
+# -------------------------
+# UPLOAD
 # -------------------------
 st.markdown("## 📤 Upload Image")
 uploaded_file = st.file_uploader(
@@ -329,7 +342,7 @@ if uploaded_file is not None:
     image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
     if image is None:
-        st.error("Could not read the image. Please upload a valid image file.")
+        st.error("Could not read the image. Please upload a valid JPG/PNG file.")
         st.stop()
 
     resized = cv2.resize(image, (IMG_SIZE, IMG_SIZE))
@@ -356,9 +369,9 @@ if uploaded_file is not None:
     with col1:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         st.subheader("🖼 Uploaded Image")
-        st.markdown('<div class="image-frame">', unsafe_allow_html=True)
+        st.markdown('<div class="image-frame"><div class="image-inner">', unsafe_allow_html=True)
         st.image(image, channels="BGR", use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div></div>', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col2:
