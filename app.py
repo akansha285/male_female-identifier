@@ -1,4 +1,4 @@
-```python
+
 import streamlit as st
 import numpy as np
 import cv2
@@ -342,4 +342,4 @@ st.markdown("""
     Built with ❤️ using Streamlit, OpenCV, NumPy and Scikit-learn
 </div>
 """, unsafe_allow_html=True)
-```
+
